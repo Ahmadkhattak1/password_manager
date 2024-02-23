@@ -43,9 +43,12 @@ def save(fernet, username):
     account_username = input("Enter your username: ")
     account_password = input("Enter your password: ")
     
+    encrypted_name = fernet.encrypt(platform_name.encode())
+    encrypted_username = fernet.encrypt(account_username.encode())
+    encrypted_password = fernet.encrypt(account_password.encode())
     
     with open(user_path, "a") as file:
-        file.write(f"{platform_name} | {account_username}, {account_password}\n")
+        file.write(f"{encrypted_name.decode()} | {encrypted_username.decode()}, {encrypted_password.decode()}\n")
         print(f"Data has been saved for {platform_name}")
     
     
@@ -59,8 +62,14 @@ def view(fernet, username):
                     platform = data[:i-1]
                     account = data[i+1:]
                     username, password = account.split(",")
-                    print(f"Platform: {platform}")
-                    print(f"Username: {username}")
-                    print(f"Password: {password}")
+                    
+                    platform_decrypted = fernet.decrypt(platform.encode())
+                    username_decrypted = fernet.decrypt(username.encode())
+                    password_decrypted = fernet.decrypt(password.encode())
+                    
+                    print(f"Platform: {platform_decrypted.decode()}")
+                    print(f"Username: {username_decrypted.decode()}")
+                    print(f"Password: {password_decrypted.decode()}")
+                    
 if __name__ == "__main__":
     main()
